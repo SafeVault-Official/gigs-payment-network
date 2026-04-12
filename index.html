@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GIGS Payment Network</title>
+  <style>
+    :root {
+      --bg: #000000;
+      --text: #f5f7ff;
+      --muted: #b9c0d4;
+      --solana-purple: #9d4dff;
+      --neon-orange: #ff7a18;
+      --glass: rgba(255, 255, 255, 0.08);
+      --glass-border: rgba(255, 255, 255, 0.24);
+      --shadow-purple: 0 0 26px rgba(157, 77, 255, 0.45);
+      --shadow-orange: 0 0 30px rgba(255, 122, 24, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 16% -10%, rgba(157, 77, 255, 0.25), transparent 40%),
+        radial-gradient(circle at 84% 2%, rgba(255, 122, 24, 0.2), transparent 45%),
+        var(--bg);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .container {
+      width: min(1100px, 92vw);
+      margin: 0 auto;
+    }
+
+    .glass {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: 18px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 10px 28px rgba(0, 0, 0, 0.35);
+    }
+
+    .navbar {
+      position: sticky;
+      top: 14px;
+      z-index: 10;
+      margin: 14px auto 0;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+    }
+
+    .brand-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--solana-purple), var(--neon-orange));
+      box-shadow: var(--shadow-purple), var(--shadow-orange);
+    }
+
+    .lang-select {
+      color: var(--text);
+      background: rgba(10, 10, 16, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    section { margin: 44px 0; }
+
+    .hero {
+      text-align: center;
+      padding: 64px 26px;
+    }
+
+    .logo-wrap {
+      margin: 0 auto 22px;
+      width: min(360px, 70vw);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at center, rgba(255,255,255,0.04), rgba(0,0,0,0.05));
+      border: 3px solid transparent;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .logo-wrap::before {
+      content: "";
+      position: absolute;
+      inset: -3px;
+      border-radius: inherit;
+      background: linear-gradient(135deg, #7a5cff, #f72585, #ff7a18, #89fc00, #00bbf9);
+      z-index: -1;
+      filter: saturate(120%);
+      box-shadow: 0 0 22px rgba(247, 37, 133, 0.5), 0 0 22px rgba(0, 187, 249, 0.45);
+    }
+
+    .logo-inner {
+      width: calc(100% - 12px);
+      height: calc(100% - 12px);
+      border-radius: inherit;
+      display: grid;
+      place-items: center;
+      background: #050507;
+      font-size: clamp(2.6rem, 6vw, 4rem);
+      filter: drop-shadow(0 0 14px rgba(157, 77, 255, 0.5));
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 6vw, 3.25rem);
+      line-height: 1.15;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 12px 0 24px;
+      font-size: clamp(1rem, 3.2vw, 1.2rem);
+    }
+
+    .cta {
+      display: inline-block;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 700;
+      padding: 14px 20px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--solana-purple), var(--neon-orange));
+      box-shadow: var(--shadow-purple), var(--shadow-orange);
+      transition: transform 0.2s ease;
+    }
+
+    .cta:hover { transform: translateY(-2px); }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card {
+      padding: 22px;
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 1.4rem;
+      margin-bottom: 14px;
+    }
+
+    .feature {
+      display: flex;
+      gap: 10px;
+      margin: 10px 0;
+      color: #f8f9ff;
+    }
+
+    .feature i { font-style: normal; }
+
+    .burn {
+      padding: 26px;
+      text-align: center;
+      border: 1px solid rgba(255, 122, 24, 0.55);
+      box-shadow: var(--shadow-orange);
+    }
+
+    .burn strong {
+      color: #ffd7bd;
+      font-size: 1.12rem;
+      letter-spacing: 0.2px;
+    }
+
+    .roadmap-list {
+      margin: 0;
+      padding-left: 20px;
+      color: #ecedff;
+    }
+
+    .roadmap-list li { margin: 10px 0; }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+      padding: 32px 0 40px;
+    }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+      .navbar { top: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="navbar glass">
+      <div class="brand">
+        <span class="brand-dot" aria-hidden="true"></span>
+        <span data-i18n="brand">$GIGS Network</span>
+      </div>
+      <select id="languageSelector" class="lang-select" aria-label="Language selector">
+        <option value="en">English</option>
+        <option value="tr">Turkish</option>
+        <option value="zh">Chinese (Simplified)</option>
+        <option value="ja">Japanese</option>
+        <option value="ko">Korean</option>
+        <option value="ru">Russian</option>
+        <option value="es">Spanish</option>
+        <option value="pt">Portuguese</option>
+      </select>
+    </nav>
+
+    <section class="hero glass">
+      <div class="logo-wrap" aria-label="GIGS logo placeholder">
+        <div class="logo-inner">🤝</div>
+      </div>
+      <h1 data-i18n="heroTitle">GIGS Payment Network</h1>
+      <p class="subtitle" data-i18n="heroSubtitle">The Future of Digital Workforce</p>
+      <a class="cta" href="https://pump.fun/" target="_blank" rel="noreferrer" data-i18n="cta">BUY $GIGS ON PUMP.FUN</a>
+    </section>
+
+    <section class="grid">
+      <article class="card glass">
+        <h2 data-i18n="tokenomicsTitle">Tokenomics</h2>
+        <div class="feature"><i>🧾</i><span data-i18n="tax">0% Tax</span></div>
+        <div class="feature"><i>🔥</i><span data-i18n="lp">Burned LP</span></div>
+        <div class="feature"><i>🔒</i><span data-i18n="mint">Mint Revoked</span></div>
+      </article>
+
+      <article class="card burn glass">
+        <h2 data-i18n="burnTitle">Burn Protocol</h2>
+        <strong data-i18n="burnPromise">Every $10,000 Volume = Automatic Buyback & Burn</strong>
+      </article>
+
+      <article class="card glass">
+        <h2 data-i18n="roadmapTitle">Roadmap</h2>
+        <ol class="roadmap-list">
+          <li data-i18n="phase1">Phase 1: Stealth Launch</li>
+          <li data-i18n="phase2">Phase 2: Burn Mechanisms</li>
+          <li data-i18n="phase3">Phase 3: Global Integration</li>
+        </ol>
+      </article>
+    </section>
+
+    <footer>
+      <span data-i18n="footer">Built for a borderless crypto workforce.</span>
+    </footer>
+  </div>
+
+  <script>
+    const translations = {
+      en: {
+        brand: "$GIGS Network",
+        heroTitle: "GIGS Payment Network",
+        heroSubtitle: "The Future of Digital Workforce",
+        cta: "BUY $GIGS ON PUMP.FUN",
+        tokenomicsTitle: "Tokenomics",
+        tax: "0% Tax",
+        lp: "Burned LP",
+        mint: "Mint Revoked",
+        burnTitle: "Burn Protocol",
+        burnPromise: "Every $10,000 Volume = Automatic Buyback & Burn",
+        roadmapTitle: "Roadmap",
+        phase1: "Phase 1: Stealth Launch",
+        phase2: "Phase 2: Burn Mechanisms",
+        phase3: "Phase 3: Global Integration",
+        footer: "Built for a borderless crypto workforce."
+      },
+      tr: {
+        brand: "$GIGS Ağı",
+        heroTitle: "GIGS Ödeme Ağı",
+        heroSubtitle: "Dijital İş Gücünün Geleceği",
+        cta: "$GIGS SATIN AL - PUMP.FUN",
+        tokenomicsTitle: "Tokenomik",
+        tax: "%0 Vergi",
+        lp: "LP Yakıldı",
+        mint: "Mint Yetkisi Kaldırıldı",
+        burnTitle: "Yakım Protokolü",
+        burnPromise: "Her 10.000$ Hacim = Otomatik Geri Alım ve Yakım",
+        roadmapTitle: "Yol Haritası",
+        phase1: "Faz 1: Gizli Lansman",
+        phase2: "Faz 2: Yakım Mekanizmaları",
+        phase3: "Faz 3: Küresel Entegrasyon",
+        footer: "Sınırsız bir kripto iş gücü için inşa edildi."
+      },
+      zh: {
+        brand: "$GIGS 网络",
+        heroTitle: "GIGS 支付网络",
+        heroSubtitle: "数字化劳动力的未来",
+        cta: "在 PUMP.FUN 购买 $GIGS",
+        tokenomicsTitle: "代币经济",
+        tax: "0% 税费",
+        lp: "LP 已销毁",
+        mint: "已撤销铸币权限",
+        burnTitle: "销毁协议",
+        burnPromise: "每 $10,000 成交量 = 自动回购并销毁",
+        roadmapTitle: "路线图",
+        phase1: "阶段 1：隐身启动",
+        phase2: "阶段 2：销毁机制",
+        phase3: "阶段 3：全球整合",
+        footer: "为无国界加密劳动力打造。"
+      },
+      ja: {
+        brand: "$GIGS ネットワーク",
+        heroTitle: "GIGS ペイメントネットワーク",
+        heroSubtitle: "デジタルワークフォースの未来",
+        cta: "PUMP.FUNで $GIGS を購入",
+        tokenomicsTitle: "トークノミクス",
+        tax: "税率 0%",
+        lp: "LP バーン済み",
+        mint: "ミント権限を無効化",
+        burnTitle: "バーンプロトコル",
+        burnPromise: "取引量 $10,000 ごとに自動買い戻し＆バーン",
+        roadmapTitle: "ロードマップ",
+        phase1: "フェーズ1：ステルスローンチ",
+        phase2: "フェーズ2：バーンメカニズム",
+        phase3: "フェーズ3：グローバル統合",
+        footer: "ボーダーレスな暗号ワークフォースのために構築。"
+      },
+      ko: {
+        brand: "$GIGS 네트워크",
+        heroTitle: "GIGS 결제 네트워크",
+        heroSubtitle: "디지털 인력의 미래",
+        cta: "PUMP.FUN에서 $GIGS 구매",
+        tokenomicsTitle: "토크노믹스",
+        tax: "세금 0%",
+        lp: "LP 소각 완료",
+        mint: "민트 권한 폐기",
+        burnTitle: "소각 프로토콜",
+        burnPromise: "거래량 $10,000마다 자동 바이백 & 소각",
+        roadmapTitle: "로드맵",
+        phase1: "1단계: 스텔스 런칭",
+        phase2: "2단계: 소각 메커니즘",
+        phase3: "3단계: 글로벌 통합",
+        footer: "국경 없는 크립토 인력을 위해 설계됨."
+      },
+      ru: {
+        brand: "$GIGS Сеть",
+        heroTitle: "Платежная сеть GIGS",
+        heroSubtitle: "Будущее цифровой рабочей силы",
+        cta: "КУПИТЬ $GIGS НА PUMP.FUN",
+        tokenomicsTitle: "Токеномика",
+        tax: "Налог 0%",
+        lp: "LP сожжена",
+        mint: "Право минта отозвано",
+        burnTitle: "Протокол сжигания",
+        burnPromise: "Каждые $10,000 объема = авто-байбек и сжигание",
+        roadmapTitle: "Дорожная карта",
+        phase1: "Этап 1: Скрытый запуск",
+        phase2: "Этап 2: Механизмы сжигания",
+        phase3: "Этап 3: Глобальная интеграция",
+        footer: "Создано для безграничной крипто-рабочей силы."
+      },
+      es: {
+        brand: "Red $GIGS",
+        heroTitle: "Red de Pagos GIGS",
+        heroSubtitle: "El futuro de la fuerza laboral digital",
+        cta: "COMPRA $GIGS EN PUMP.FUN",
+        tokenomicsTitle: "Tokenómica",
+        tax: "0% Impuesto",
+        lp: "LP Quemada",
+        mint: "Mint Revocado",
+        burnTitle: "Protocolo de Quema",
+        burnPromise: "Cada $10,000 de volumen = recompra automática y quema",
+        roadmapTitle: "Hoja de Ruta",
+        phase1: "Fase 1: Lanzamiento Sigiloso",
+        phase2: "Fase 2: Mecanismos de Quema",
+        phase3: "Fase 3: Integración Global",
+        footer: "Construido para una fuerza laboral cripto sin fronteras."
+      },
+      pt: {
+        brand: "Rede $GIGS",
+        heroTitle: "Rede de Pagamentos GIGS",
+        heroSubtitle: "O futuro da força de trabalho digital",
+        cta: "COMPRE $GIGS NA PUMP.FUN",
+        tokenomicsTitle: "Tokenomics",
+        tax: "0% Taxa",
+        lp: "LP Queimada",
+        mint: "Mint Revogado",
+        burnTitle: "Protocolo de Queima",
+        burnPromise: "A cada $10.000 de volume = recompra automática e queima",
+        roadmapTitle: "Roadmap",
+        phase1: "Fase 1: Lançamento Sigiloso",
+        phase2: "Fase 2: Mecanismos de Queima",
+        phase3: "Fase 3: Integração Global",
+        footer: "Construído para uma força de trabalho cripto sem fronteiras."
+      }
+    };
+
+    const selector = document.getElementById("languageSelector");
+
+    function applyLanguage(lang) {
+      const active = translations[lang] || translations.en;
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const key = el.dataset.i18n;
+        if (active[key]) el.textContent = active[key];
+      });
+      document.documentElement.lang = lang;
+      localStorage.setItem("gigs_lang", lang);
+    }
+
+    const savedLanguage = localStorage.getItem("gigs_lang") || "en";
+    selector.value = savedLanguage;
+    applyLanguage(savedLanguage);
+
+    selector.addEventListener("change", (event) => {
+      applyLanguage(event.target.value);
+    });
+  </script>
+</body>
+</html>
